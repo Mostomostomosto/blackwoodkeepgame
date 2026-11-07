@@ -49,7 +49,7 @@ function animateArchive(oldRects){
  archiveRoot.classList.add('is-animating');void archiveRoot.offsetWidth;
  window.requestAnimationFrame(()=>{moving.forEach(el=>{el.style.transition='transform 720ms cubic-bezier(.2,.78,.18,1)';el.style.transform='translate(0,0) scale(1,1)'});window.setTimeout(()=>{moving.forEach(el=>{el.style.transition='';el.style.transform=''});archiveRoot.classList.remove('is-animating')},760)});
 }
-function renderArchive(animate=true){
+function renderArchive(animate=true,preserveY=null){
  const oldRects=new Map();
  if(animate&&archiveMotionAllowed())archiveCards.forEach(card=>oldRects.set(card.index,card.motion.getBoundingClientRect()));
  const remaining=archiveCards.filter(card=>card.index!==featuredArchive);
@@ -60,11 +60,12 @@ function renderArchive(animate=true){
  archiveTop.replaceChildren(...remaining.slice(0,4).map(card=>card.motion));
  archiveBottom.replaceChildren(...remaining.slice(4).map(card=>card.motion));
  updateArchiveCopy();
+ if(preserveY!==null&&window.matchMedia('(max-width: 760px)').matches){const currentTop=featured.motion.getBoundingClientRect().top;const root=document.documentElement;const previousBehavior=root.style.scrollBehavior;root.style.scrollBehavior='auto';window.scrollTo(0,window.scrollY+currentTop-preserveY);root.style.scrollBehavior=previousBehavior}
  if(animate&&oldRects.size)animateArchive(oldRects);
 }
 archiveRoot.addEventListener('click',event=>{
  const thumb=event.target.closest('[data-archive-index]');
- if(thumb){const index=Number(thumb.dataset.archiveIndex);if(index!==featuredArchive){featuredArchive=index;renderArchive(true)}}
+ if(thumb){const index=Number(thumb.dataset.archiveIndex);if(index!==featuredArchive){const preserveY=window.matchMedia('(max-width: 760px)').matches?thumb.getBoundingClientRect().top:null;featuredArchive=index;renderArchive(true,preserveY)}}
 });
 language.addEventListener('change',()=>updateArchiveCopy());
 renderArchive(false);
