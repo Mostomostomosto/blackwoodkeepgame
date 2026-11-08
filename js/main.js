@@ -24,7 +24,7 @@ const archiveAssets=Array.from({length:8},(_,i)=>'assets/gallery_'+String(i+1).p
 const archiveCards=archiveAssets.map((src,index)=>{
  const motion=document.createElement('div');motion.className='archive-motion archive-motion-thumb';
  const button=document.createElement('button');button.type='button';button.className='archive-thumb';button.dataset.archiveIndex=String(index);
- const img=document.createElement('img');img.src=src;img.loading='lazy';
+ const img=document.createElement('img');img.src=src;img.loading=index===featuredArchive?'eager':'lazy';img.fetchPriority=index===featuredArchive?'high':'auto';
  const label=document.createElement('span');label.className='archive-image-label';
  const name=document.createElement('span');name.className='archive-image-name';
  label.append(name);button.append(img,label);motion.append(button);
@@ -54,6 +54,7 @@ function renderArchive(animate=true,preserveY=null){
  if(animate&&archiveMotionAllowed())archiveCards.forEach(card=>oldRects.set(card.index,card.motion.getBoundingClientRect()));
  const remaining=archiveCards.filter(card=>card.index!==featuredArchive);
  const featured=archiveCards[featuredArchive];
+ featured.img.loading='eager';featured.img.fetchPriority='high';
  featured.motion.className='archive-motion archive-motion-featured';featured.button.className='archive-featured';
  remaining.forEach(card=>{card.motion.className='archive-motion archive-motion-thumb';card.button.className='archive-thumb'});
  archiveFeature.replaceChildren(featured.motion);
