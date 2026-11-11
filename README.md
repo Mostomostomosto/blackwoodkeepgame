@@ -13,3 +13,7 @@ Sitio estático oficial de Blackwood Keep. La página se sirve desde la raíz de
 ## Publicación
 
 En GitHub, configura Pages para publicar desde la rama principal y la carpeta raíz (`/`).
+## Juego web
+
+La build HTML5 del capítulo está en game/ y se abre desde los botones de juego. Sus rutas son relativas para que funcione tanto en GitHub Pages como bajo la ruta del proyecto.
+

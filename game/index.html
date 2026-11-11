@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Blackwood Keep</title>
+  <link rel="icon" type="image/png" href="assets/ui/hud/docs_ico.webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Almendra:ital,wght@0,400;0,700;1,400;1,700&family=Almendra+SC&family=Caveat:wght@400;600;700&family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=7.18">
+</head>
+<body>
+  <div id="game-wrapper">
+    <div id="game-container">
+
+      <!-- Pantalla de Inicio / Splash Screen con Logo -->
+      <section id="view-splash" class="game-view active" aria-label="Pantalla de inicio">
+        <div class="splash-content">
+          <img src="assets/ui/branding/blackwood_logo.webp" alt="Blackwood Keep" class="splash-logo">
+        </div>
+      </section>
+
+      <!-- Vista: Menú Principal -->
+      <section id="view-menu" class="game-view">
+        <div class="menu-bg-layer"></div>
+
+        <div class="menu-content">
+          <div class="menu-column">
+            <header class="menu-header">
+              <img src="assets/ui/menu/menu_logo.webp" alt="Blackwood Keep" class="menu-logo-img">
+            </header>
+
+            <nav class="menu-nav">
+              <button id="btn-new-game" class="menu-btn" data-i18n="menu_nueva_partida">Nueva partida</button>
+              <div class="menu-divider" aria-hidden="true"></div>
+              <button id="btn-continue" class="menu-btn disabled" disabled aria-disabled="true" data-i18n="menu_continuar">Continuar</button>
+              <div class="menu-divider" aria-hidden="true"></div>
+              <button id="btn-options" class="menu-btn" data-i18n="menu_opciones">Opciones</button>
+              <div class="menu-divider" aria-hidden="true"></div>
+              <button id="btn-credits" class="menu-btn" data-i18n="menu_creditos">Créditos</button>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Notificación emergente / Toast -->
+        <div id="menu-toast" class="toast-message" role="status" aria-live="polite"></div>
+      </section>
+
+      <!-- Vista: Pantalla de Carga (Vela Cinematográfica 50 fotogramas) -->
+      <section id="view-loader" class="game-view" aria-label="Cargando nivel" data-i18n-aria="loader_status">
+        <div class="loader-cinematic-container">
+          <img id="loader-frame" class="loader-frame-img" src="assets/ui/loader/frame_01.webp" alt="Cargando...">
+          <div class="loader-vignette-overlay"></div>
+        </div>
+        <div id="loader-status" class="loader-status-text" data-i18n="loader_status">Descendiendo al sótano...</div>
+      </section>
+
+      <!-- Vista: Escena del Juego -->
+      <section id="view-game" class="game-view">
+        <div id="scene-background" class="scene-background-layer"></div>
+        <div id="scene-crossfade-layer" class="scene-crossfade-layer"></div>
+        <div id="scene-overlays" class="scene-overlays-layer"></div>
+        <canvas id="dust-canvas" class="dust-canvas-layer"></canvas>
+        <div class="scene-vignette-layer"></div>
+        <div id="scene-door-curtain" class="scene-door-curtain"></div>
+        <div id="scene-transition-curtain" class="scene-transition-curtain"></div>
+
+        <!-- Bordes y Chevrons de Navegación Lateral -->
+        <button type="button" id="nav-edge-left" class="nav-edge nav-edge-left hidden" aria-label="Mirar a la izquierda">
+          <div class="nav-edge-vignette"></div>
+          <div class="chevron-wrapper">
+            <svg class="chevron-svg" viewBox="0 0 24 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 8 8 24 16 40"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <button type="button" id="nav-edge-right" class="nav-edge nav-edge-right hidden" aria-label="Mirar a la derecha">
+          <div class="nav-edge-vignette"></div>
+          <div class="chevron-wrapper">
+            <svg class="chevron-svg" viewBox="0 0 24 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="8 8 16 24 8 40"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <!-- Borde y Chevron Inferior (para volver de primeros planos / closeups) -->
+        <button type="button" id="nav-edge-bottom" class="nav-edge nav-edge-bottom hidden" aria-label="Volver a la vista general">
+          <div class="nav-edge-vignette"></div>
+          <div class="chevron-wrapper">
+            <svg class="chevron-svg chevron-down" viewBox="0 0 48 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="8 8 24 16 40 8"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <!-- Pista de Navegación Inicial (se desvanece tras la primera interacción) -->
+        <div id="nav-tutorial-hint" class="nav-hint-badge" data-i18n="hint_navigation">
+          Toca los bordes para mirar alrededor
+        </div>
+
+        <!-- HUD: Inventario Permanente + Cuaderno a la izquierda, Opciones / Salir a la derecha -->
+        <div id="game-hud" class="game-hud">
+          <!-- Barra Lateral Izquierda: Botón Cuaderno + Ranuras de Inventario -->
+          <aside id="inventory-sidebar" class="hud-inventory-sidebar" aria-label="Inventario y Cuaderno">
+            <!-- Botón de Cuaderno / Documentos -->
+            <button type="button" id="btn-docs-toggle" class="hud-btn hud-btn-docs" aria-label="Cuaderno de notas" data-i18n-aria="hud_docs">
+              <img src="assets/ui/hud/docs_ico.webp" alt="Cuaderno" class="hud-icon-docs">
+            </button>
+
+            <!-- Separador decorativo -->
+            <div class="hud-sidebar-divider"></div>
+
+            <!-- Ranuras Permanentes de Inventario -->
+            <div id="inventory-slots" class="inventory-slots-container" role="region" aria-label="Ranuras de inventario">
+              <div class="inventory-slot empty" data-slot-index="0" tabindex="0"></div>
+              <div class="inventory-slot empty" data-slot-index="1" tabindex="0"></div>
+              <div class="inventory-slot empty" data-slot-index="2" tabindex="0"></div>
+              <div class="inventory-slot empty" data-slot-index="3" tabindex="0"></div>
+              <div class="inventory-slot empty" data-slot-index="4" tabindex="0"></div>
+              <div class="inventory-slot empty" data-slot-index="5" tabindex="0"></div>
+            </div>
+          </aside>
+
+          <!-- Botón de Opciones / Salir (Flecha ornamentada, arriba a la derecha) -->
+          <button type="button" id="btn-game-options" class="hud-btn hud-btn-options" aria-label="Opciones" title="Opciones" data-i18n-title="hud_options" data-i18n-aria="hud_options">
+            <img src="assets/ui/hud/back_arrow.webp" alt="Opciones" class="hud-icon-back-arrow">
+          </button>
+        </div>
+
+        <!-- Barra de Mensajes y Subtítulos Narrativos (abajo al centro) -->
+        <div id="game-message-bar" class="game-message-bar" role="status" aria-live="polite">
+          <span id="game-message-text" class="game-message-text"></span>
+        </div>
+
+        <!-- Banner Interactivo del Tutorial en Juego -->
+        <div id="tutorial-banner" class="tutorial-banner" role="status" aria-live="polite">
+          <span id="tutorial-banner-text" class="tutorial-banner-text"></span>
+        </div>
+
+        <!-- Indicador Animado de Deslizamiento Lateral (Paso 1) -->
+        <div id="tutorial-swipe-indicator" class="tutorial-swipe-indicator" aria-hidden="true" style="display: none;">
+          <div class="tutorial-swipe-track">
+            <svg viewBox="0 0 160 50" class="tutorial-swipe-svg">
+              <path class="tutorial-swipe-line" d="M20 25 L140 25" stroke="rgba(212,175,55,0.45)" stroke-width="3" stroke-dasharray="6 4"/>
+              <path class="tutorial-swipe-arrow" d="M128 16 L142 25 L128 34" fill="none" stroke="#ffe8a3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle class="tutorial-swipe-pulse" cx="30" cy="25" r="9"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Indicador Animado de Retroceso / Pellizco (Paso 4) -->
+        <div id="tutorial-pinch-indicator" class="tutorial-pinch-indicator" aria-hidden="true" style="display: none;">
+          <div class="tutorial-pinch-track">
+            <svg viewBox="0 0 80 80" class="tutorial-pinch-svg" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path class="anim-pinch-tl" d="M16 16 L30 30 M30 30 H20 M30 30 V20"/>
+              <path class="anim-pinch-br" d="M64 64 L50 50 M50 50 H60 M50 50 V60"/>
+              <path class="anim-swipe-down" d="M40 22 V56 M40 56 L32 48 M40 56 L48 48"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Modal Tutorial de Navegación por Gestos para Móvil -->
+        <div id="gesture-tutorial-modal" class="modal-backdrop gesture-tutorial-backdrop" aria-hidden="true" style="display: none;">
+          <div class="gesture-tutorial-card">
+            <div class="gesture-tutorial-badge" data-i18n="gesture_tutorial_badge">✦ GUÍA DE NAVEGACIÓN ✦</div>
+            <h3 class="gesture-tutorial-title" data-i18n="gesture_tutorial_title">Explora Blackwood Keep</h3>
+
+            <div class="gesture-tutorial-items">
+              <div class="gesture-tutorial-row">
+                <div class="gesture-icon-anim gesture-icon-swipe">
+                  <svg viewBox="0 0 48 48" class="gesture-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="anim-swipe-arrow-l" d="M14 24h-8m0 0l4-4m-4 4l4 4"/>
+                    <path class="anim-swipe-arrow-r" d="M34 24h8m0 0l-4-4m4 4l-4 4"/>
+                    <circle class="anim-swipe-dot" cx="24" cy="24" r="4.5" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div class="gesture-text-desc">
+                  <strong data-i18n="gesture_tutorial_swipe_title">Girar y mirar alrededor</strong>
+                  <span data-i18n="gesture_tutorial_swipe_desc">Desliza horizontalmente a izquierda o derecha para cambiar de vista.</span>
+                </div>
+              </div>
+
+              <div class="gesture-tutorial-row">
+                <div class="gesture-icon-anim gesture-icon-pinch">
+                  <svg viewBox="0 0 48 48" class="gesture-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path class="anim-pinch-tl" d="M12 12l7 7m0 0h-5m5 0v-5"/>
+                    <path class="anim-pinch-br" d="M36 36l-7-7m0 0h5m-5 0v5"/>
+                    <path class="anim-swipe-down" d="M24 16v16m0 0l-4-4m4 4l4-4"/>
+                  </svg>
+                </div>
+                <div class="gesture-text-desc">
+                  <strong data-i18n="gesture_tutorial_pinch_title">Retroceder de primeros planos</strong>
+                  <span data-i18n="gesture_tutorial_pinch_desc">Pellizca con dos dedos o desliza hacia abajo para volver atrás.</span>
+                </div>
+              </div>
+
+              <div class="gesture-tutorial-row">
+                <div class="gesture-icon-anim gesture-icon-tap">
+                  <svg viewBox="0 0 48 48" class="gesture-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle class="anim-tap-ring" cx="24" cy="24" r="14" stroke-dasharray="3 3"/>
+                    <circle cx="24" cy="24" r="4" fill="currentColor"/>
+                  </svg>
+                </div>
+                <div class="gesture-text-desc">
+                  <strong data-i18n="gesture_tutorial_tap_title">Examinar e interactuar</strong>
+                  <span data-i18n="gesture_tutorial_tap_desc">Toca directamente puertas, objetos y acertijos para inspeccionarlos.</span>
+                </div>
+              </div>
+            </div>
+
+            <button type="button" id="btn-dismiss-gesture-tutorial" class="gesture-tutorial-btn" data-i18n="gesture_tutorial_btn">
+              Entendido
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vista: Pantalla de Fin de Nivel (Nivel 1 Completado) -->
+      <section id="view-final-screen" class="game-view final-screen-view" aria-label="Fin del Nivel 1">
+        <div class="final-escena" aria-hidden="true">
+          <img class="final-fondo" src="assets/ui/final_screen/door.webp" alt="">
+          <div class="final-bombilla"></div>
+          <div class="final-rendija"></div>
+          <div class="final-motas" id="final-screen-motas"></div>
+        </div>
+        <div class="final-velo"></div>
+        <div id="final-screen-curtain" class="final-screen-curtain"></div>
+
+        <main class="final-panel">
+          <div class="final-contenido">
+            <img class="final-logo" src="assets/ui/final_screen/menu_logo.webp" alt="Blackwood Keep">
+            <img class="final-separador" src="assets/ui/final_screen/separador.webp" alt="">
+
+            <h1 class="final-titulo" data-i18n="final_screen_title">Nivel 1 completado</h1>
+            <p class="final-subtitulo" data-i18n="final_screen_subtitle">Enhorabuena: has salido del sótano. La casa sigue ahí arriba.</p>
+
+            <img class="final-separador" src="assets/ui/final_screen/separador.webp" alt="">
+
+            <dl class="final-datos">
+              <dt data-i18n="final_screen_time">Tiempo de juego</dt>
+              <dd id="final-screen-time">-</dd>
+              <dt data-i18n="final_screen_documents">Documentos en el cuaderno</dt>
+              <dd id="final-screen-documents">-</dd>
+            </dl>
+
+            <img class="final-separador" src="assets/ui/final_screen/separador.webp" alt="">
+
+            <div class="final-botones">
+              <button class="final-btn" type="button" id="btn-final-replay" data-i18n="final_screen_btn_replay">Volver a jugar</button>
+              <button class="final-btn" type="button" id="btn-final-diary" data-i18n="final_screen_btn_diary">Releer el cuaderno</button>
+            </div>
+
+            <p class="final-continuara" data-i18n="final_screen_to_be_continued">Continuará…</p>
+            <p class="final-nivel2" data-i18n="final_screen_level2">Nivel 2 próximamente</p>
+            <p class="final-firma"><span data-i18n="final_screen_by">Un juego de</span> Jon Acedo</p>
+          </div>
+        </main>
+      </section>
+
+      <!-- Modal: Opciones (Atmospheric Modular Options Screen) -->
+      <div id="modal-options" class="modal-backdrop options-backdrop" aria-hidden="true" style="display: none;">
+        <div class="options-screen">
+          <div class="options-layout">
+
+            <!-- Marco modular redimensionable de opciones -->
+            <div class="options-frame">
+              <div class="options-frame-bg"></div>
+
+              <!-- Esquinas ornamentadas -->
+              <div class="opt-corner opt-corner-tl"></div>
+              <div class="opt-corner opt-corner-tr"></div>
+              <div class="opt-corner opt-corner-bl"></div>
+              <div class="opt-corner opt-corner-br"></div>
+
+              <!-- Bordes repetibles -->
+              <div class="opt-border opt-border-t"></div>
+              <div class="opt-border opt-border-b"></div>
+              <div class="opt-border opt-border-l"></div>
+              <div class="opt-border opt-border-r"></div>
+
+              <!-- Crestas / Ornamentos centrales -->
+              <div class="opt-ornament opt-ornament-t"></div>
+              <div class="opt-ornament opt-ornament-b"></div>
+
+              <!-- Contenido interno fluido de opciones -->
+              <div class="options-inner-content">
+                <!-- Título superior: OPCIONES -->
+                <h2 class="options-title" data-i18n="options_title">OPCIONES</h2>
+
+                <!-- Sección: Sonido -->
+                <h3 class="options-heading heading-sound" data-i18n="options_tab_audio">SONIDO</h3>
+
+                <div class="options-sliders-group">
+                  <!-- Fila 1: Volumen General -->
+                  <div class="options-slider-row row-master">
+                    <span class="options-slider-label" data-i18n="options_audio_master">VOLUMEN GENERAL</span>
+                    <div class="options-track-wrapper">
+                      <div class="options-slider-fill" id="fill-master"></div>
+                      <input type="range" id="slider-master" min="0" max="1" step="0.01" value="0.8" aria-label="Volumen General">
+                    </div>
+                    <span class="options-slider-val" id="val-master">80</span>
+                  </div>
+
+                  <!-- Fila 2: Efectos -->
+                  <div class="options-slider-row row-sfx">
+                    <span class="options-slider-label" data-i18n="options_audio_sfx">EFECTOS</span>
+                    <div class="options-track-wrapper">
+                      <div class="options-slider-fill" id="fill-sfx"></div>
+                      <input type="range" id="slider-sfx" min="0" max="1" step="0.01" value="0.7" aria-label="Efectos">
+                    </div>
+                    <span class="options-slider-val" id="val-sfx">70</span>
+                  </div>
+
+                  <!-- Fila 3: Música -->
+                  <div class="options-slider-row row-music">
+                    <span class="options-slider-label" data-i18n="options_audio_music">MÚSICA</span>
+                    <div class="options-track-wrapper">
+                      <div class="options-slider-fill" id="fill-music"></div>
+                      <input type="range" id="slider-music" min="0" max="1" step="0.01" value="0.5" aria-label="Música">
+                    </div>
+                    <span class="options-slider-val" id="val-music">50</span>
+                  </div>
+
+                  <!-- Fila 4: Ambiente -->
+                  <div class="options-slider-row row-ambience">
+                    <span class="options-slider-label" data-i18n="options_audio_ambience">AMBIENTE</span>
+                    <div class="options-track-wrapper">
+                      <div class="options-slider-fill" id="fill-ambience"></div>
+                      <input type="range" id="slider-ambience" min="0" max="1" step="0.01" value="0.65" aria-label="Ambiente">
+                    </div>
+                    <span class="options-slider-val" id="val-ambience">65</span>
+                  </div>
+                </div>
+
+                <!-- Sección: Idioma -->
+                <h3 class="options-heading heading-lang" data-i18n="options_tab_language">IDIOMA</h3>
+
+                <div class="options-lang-row">
+                  <button type="button" class="btn-lang-choice" data-lang="en" data-i18n="lang_en" aria-pressed="false">INGLÉS</button>
+                  <button type="button" class="btn-lang-choice active" data-lang="es" data-i18n="lang_es" aria-pressed="true">ESPAÑOL</button>
+                  <button type="button" class="btn-lang-choice" data-lang="fr" data-i18n="lang_fr" aria-pressed="false">FRANCÉS</button>
+                </div>
+
+                <!-- Guía de Controles y Gestos -->
+                <div class="options-tutorial-row">
+                  <button type="button" id="btn-open-gesture-tutorial" class="btn-options-tutorial" data-i18n="btn_gesture_tutorial">
+                    GUÍA DE CONTROLES
+                  </button>
+                </div>
+
+                <!-- Botones de Navegación -->
+                <div class="options-nav-row">
+                  <button type="button" id="btn-return-to-menu" class="btn-options-nav" data-i18n="btn_return_menu" style="display: none;">MENÚ DE INICIO</button>
+                  <button type="button" id="btn-options-back" class="btn-options-nav btn-close-modal" data-i18n="btn_close">VOLVER</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Logo de Blackwood Keep a la derecha -->
+            <div class="options-logo-container">
+              <img src="assets/ui/menu/menu_logo.webp" alt="Blackwood Keep" class="options-logo-img">
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Cuaderno de Notas / Documentos (Page-Flip) -->
+      <div id="modal-docs" class="modal-backdrop notebook-backdrop" aria-hidden="true" style="display: none;">
+        <div class="notebook-stage-wrapper">
+          <div class="notebook-anchor">
+            <div id="notebook-flip-container" class="notebook-flip-container">
+              <!-- Las páginas se renderizan dinámicamente mediante DiaryManager -->
+            </div>
+          </div>
+          <!-- Botón Volver / Cerrar con inv_arrow a la derecha del cuaderno -->
+          <button type="button" id="btn-close-notebook" class="notebook-close-btn btn-close-modal" aria-label="Cerrar cuaderno"></button>
+        </div>
+      </div>
+
+      <!-- Modal: Puzzle del Baúl (Sliding Puzzle 3x3) -->
+      <div id="modal-puzzle-trunk" class="modal-backdrop puzzle-backdrop" aria-hidden="true" style="display: none;">
+        <button type="button" id="btn-close-puzzle-trunk" class="puzzle-close-btn" aria-label="Volver">
+          <span class="puzzle-close-x">✕</span>
+          <span class="puzzle-close-label" data-i18n="btn_close">Volver</span>
+        </button>
+        <div class="modal-panel gothic-frame modal-panel-puzzle">
+          <div class="modal-body puzzle-body">
+            <div class="puzzle-container">
+              <div id="trunk-puzzle-grid" class="puzzle-grid-3x3" role="grid" aria-label="Puzzle deslizante 3x3">
+                <!-- 9 celdas generadas dinámicamente -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Puzzle del Panel Providence (10 Diales) -->
+      <div id="modal-puzzle-providence" class="modal-backdrop puzzle-backdrop" aria-hidden="true" style="display: none;">
+        <button type="button" id="btn-close-puzzle-providence" class="puzzle-close-btn" aria-label="Volver">
+          <span class="puzzle-close-x">✕</span>
+          <span class="puzzle-close-label" data-i18n="btn_close">Volver</span>
+        </button>
+        <div class="modal-panel modal-panel-providence">
+          <div id="providence-panel-stage" class="providence-panel-stage" role="region" aria-label="Panel de diales Providence">
+            <!-- 10 diales generados dinámicamente -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Inspección y Recogida de Ítems (Container Transform Close-up) -->
+      <div id="modal-item-closeup" class="item-closeup-overlay" aria-hidden="true" style="display: none;">
+        <div class="item-closeup-container">
+          <div class="item-closeup-content">
+            <div class="item-closeup-image-wrapper">
+              <img id="item-closeup-img" class="item-closeup-img" src="" alt="">
+            </div>
+            <h3 id="item-closeup-title" class="item-closeup-title"></h3>
+          </div>
+          <button type="button" id="btn-close-item-closeup" class="item-closeup-close-btn" aria-label="Guardar en inventario"></button>
+        </div>
+      </div>
+
+      <!-- Modal: Visor de Documentos Encontrados (Texto blanco sobre overlay negro) -->
+      <div id="modal-doc-viewer" class="modal-backdrop doc-viewer-backdrop" aria-hidden="true" style="display: none;">
+        <div class="doc-viewer-panel gothic-frame">
+          <button type="button" class="doc-viewer-close btn-close-doc-viewer" id="btn-close-doc-viewer" aria-label="Cerrar documento">&times;</button>
+          <div class="doc-viewer-header">
+            <div class="doc-viewer-badge" id="doc-viewer-badge">✦ DOCUMENTO ENCONTRADO ✦</div>
+            <h2 class="doc-viewer-title" id="doc-viewer-title"></h2>
+            <div class="doc-viewer-divider"></div>
+          </div>
+          <div class="doc-viewer-body" id="doc-viewer-body"></div>
+          <div class="doc-viewer-footer">
+            <button type="button" class="modal-btn secondary btn-close-doc-viewer" id="btn-doc-viewer-done">Guardar en el diario</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Reproductor de Vídeo Cinemático -->
+      <div id="modal-cinematic-video" class="modal-backdrop cinematic-video-backdrop" aria-hidden="true" style="display: none;">
+        <div class="cinematic-video-wrapper">
+          <video id="cinematic-video-player" class="cinematic-video-player" playsinline webkit-playsinline x5-playsinline preload="auto" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3Crect fill='black' width='1' height='1'/%3E%3C/svg%3E">
+            <source id="cinematic-video-source" src="" type="video/mp4">
+          </video>
+          <div id="cinematic-fade-curtain" class="cinematic-fade-curtain"></div>
+          <button type="button" id="btn-skip-cinematic" class="cinematic-skip-btn" aria-label="Saltar cinemática">
+            <span>Saltar</span> ❯❯
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal: Créditos -->
+      <div id="modal-credits" class="modal-backdrop" aria-hidden="true" style="display: none;">
+        <div class="modal-panel gothic-frame">
+          <div class="modal-header">
+            <h2 class="modal-title" data-i18n="credits_title">Créditos</h2>
+          </div>
+          <div class="modal-body credits-list">
+            <div class="credit-row">
+              <span class="credit-role" data-i18n="credits_dev_role">Dirección y Desarrollo</span>
+              <span class="credit-name" data-i18n="credits_dev_name">Blackwood Keep</span>
+            </div>
+            <div class="credit-row">
+              <span class="credit-role" data-i18n="credits_art_role">Arte y Escenarios</span>
+              <span class="credit-detail" data-i18n="credits_art_text">Escenarios prerenderizados asistidos por IA</span>
+            </div>
+            <div class="credit-row">
+              <span class="credit-role" data-i18n="credits_audio_role">Paisaje Sonoro</span>
+              <span class="credit-detail" data-i18n="credits_audio_text">Diseño de audio ambiental y efectos</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="modal-btn btn-close-modal" data-i18n="btn_close">Volver</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal: Confirmar Sobrescritura de Partida -->
+      <div id="modal-confirm-new" class="modal-backdrop" aria-hidden="true" style="display: none;">
+        <div class="modal-panel gothic-frame modal-panel-alert">
+          <div class="modal-header">
+            <h2 class="modal-title warning-title" data-i18n="modal_confirm_title">¿Sobrescribir partida?</h2>
+          </div>
+          <div class="modal-body">
+            <p class="confirm-description" data-i18n="modal_confirm_message">
+              Ya existe una partida guardada. Si inicias una nueva partida, tu progreso actual se borrará permanentemente.
+            </p>
+          </div>
+          <div class="modal-footer actions-double">
+            <button type="button" id="btn-cancel-new-game" class="modal-btn secondary" data-i18n="btn_cancel">Cancelar</button>
+            <button type="button" id="btn-confirm-new-game" class="modal-btn danger" data-i18n="btn_confirm">Comenzar de nuevo</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="libs/page-flip.browser.js"></script>
+  <script type="module" src="scripts/main.js?v=7.17"></script>
+</body>
+</html>

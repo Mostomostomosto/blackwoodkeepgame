@@ -1,0 +1,282 @@
+{
+  "level_01_bsmnt": {
+    "bsmnt_01_main": {
+      "hotspots": [
+        {
+          "id": "hotspot_med_chest",
+          "x_pct": 0.7464,
+          "y_pct": 0.3139,
+          "w_pct": 0.0427,
+          "h_pct": 0.2589,
+          "action": "navigate",
+          "targetScene": "bsmnt_01_med_chest",
+          "ariaLabel": "Examinar botiquín"
+        },
+        {
+          "id": "hotspot_door_to_03",
+          "x_pct": 0.5979,
+          "y_pct": 0.3435,
+          "w_pct": 0.0620,
+          "h_pct": 0.2194,
+          "action": "navigate",
+          "targetScene": "bsmnt_01_door_to_03",
+          "ariaLabel": "Examinar puerta"
+        },
+        {
+          "id": "hotspot_trunk",
+          "x_pct": 0.3542,
+          "y_pct": 0.5093,
+          "w_pct": 0.0885,
+          "h_pct": 0.1056,
+          "action": "trunk",
+          "ariaLabel": "Examinar baúl"
+        },
+        {
+          "id": "hotspot_main_painting",
+          "x_pct": 0.8350,
+          "y_pct": 0.0400,
+          "w_pct": 0.1150,
+          "h_pct": 0.3800,
+          "action": "painting_navigate",
+          "ariaLabel": "Examinar cuadro y lámpara en la pared"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_med_chest": {
+      "hotspots": [
+        {
+          "id": "hotspot_med_chest_detail",
+          "x_pct": 0.1760,
+          "y_pct": 0.2731,
+          "w_pct": 0.0542,
+          "h_pct": 0.2037,
+          "action": "navigate",
+          "targetScene": "bsmnt_01_med_chest_close_up",
+          "ariaLabel": "Examinar detalle del botiquín"
+        },
+        {
+          "id": "hotspot_door_to_02",
+          "x_pct": 0.6720,
+          "y_pct": 0.1800,
+          "w_pct": 0.1080,
+          "h_pct": 0.6500,
+          "action": "navigate",
+          "targetScene": "bsmnt_01_door_to_02",
+          "ariaLabel": "Examinar puerta a la Sala 2"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_med_chest_close_up": {
+      "hotspots": [],
+      "overlays": []
+    },
+    "bsmnt_01_door_to_02": {
+      "hotspots": [
+        {
+          "id": "hotspot_door_02_knob",
+          "x_pct": 0.6350,
+          "y_pct": 0.5600,
+          "w_pct": 0.0650,
+          "h_pct": 0.2100,
+          "action": "open_cryptex",
+          "ariaLabel": "Examinar cerradura de la puerta"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_cryptex": {
+      "hotspots": [],
+      "overlays": []
+    },
+    "bsmnt_01_chest_close_up": {
+      "hotspots": [
+        {
+          "id": "hotspot_chest_lid_closed",
+          "x_pct": 0.1600,
+          "y_pct": 0.2200,
+          "w_pct": 0.6700,
+          "h_pct": 0.6000,
+          "action": "pry_chest_lid",
+          "ariaLabel": "Tapa de la caja de madera clavada"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_chest_close_up_open": {
+      "hotspots": [
+        {
+          "id": "hotspot_chest_wires",
+          "x_pct": 0.274479,
+          "y_pct": 0.387037,
+          "w_pct": 0.198958,
+          "h_pct": 0.301852,
+          "action": "pick_wires",
+          "ariaLabel": "Recoger cables",
+          "backgroundImage": "assets/levels/level_01_bsmnt/overlays/bsmnt_01_stage_wires.webp"
+        },
+        {
+          "id": "hotspot_chest_bulb",
+          "x_pct": 0.576042,
+          "y_pct": 0.372222,
+          "w_pct": 0.145313,
+          "h_pct": 0.164815,
+          "action": "pick_bulb",
+          "ariaLabel": "Recoger bombilla",
+          "backgroundImage": "assets/levels/level_01_bsmnt/overlays/bsmnt_01_stage_bulb.webp"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_door_to_03": {
+      "hotspots": [
+        {
+          "id": "hotspot_door_03_interact",
+          "x_pct": 0.4165,
+          "y_pct": 0.1823,
+          "w_pct": 0.1861,
+          "h_pct": 0.7070,
+          "action": "door_to_03",
+          "ariaLabel": "Abrir puerta"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_door_to_03_dark": {
+      "hotspots": [],
+      "overlays": []
+    },
+    "bsmnt_01_door_to_03_light": {
+      "hotspots": [],
+      "overlays": []
+    },
+    "bsmnt_01_trunk": {
+      "hotspots": [
+        {
+          "id": "hotspot_trunk_polaroid",
+          "x_pct": 0.4714,
+          "y_pct": 0.2565,
+          "w_pct": 0.0974,
+          "h_pct": 0.0907,
+          "action": "trunk_puzzle",
+          "ariaLabel": "Examinar fotografía en la tapa del baúl",
+          "backgroundImage": "assets/levels/level_01_bsmnt/overlays/polaroid.webp"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_trunk_open": {
+      "hotspots": [
+        {
+          "id": "hotspot_trunk_hammer",
+          "x_pct": 0.3191,
+          "y_pct": 0.542,
+          "w_pct": 0.2156,
+          "h_pct": 0.2124,
+          "action": "pick_hammer",
+          "ariaLabel": "Recoger martillo sacaclavos",
+          "backgroundImage": "assets/levels/level_01_bsmnt/overlays/bsmnt_stage_hammer.webp"
+        },
+        {
+          "id": "hotspot_trunk_key",
+          "x_pct": 0.5211,
+          "y_pct": 0.6004,
+          "w_pct": 0.1188,
+          "h_pct": 0.0806,
+          "action": "pick_key_door_03",
+          "ariaLabel": "Recoger llave antigua de hierro",
+          "backgroundImage": "assets/levels/level_01_bsmnt/overlays/bsmnt_key_to_03.webp"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_painting": {
+      "hotspots": [
+        {
+          "id": "hotspot_painting_lamp",
+          "x_pct": 0.4150,
+          "y_pct": 0.0200,
+          "w_pct": 0.1650,
+          "h_pct": 0.2650,
+          "action": "painting_lamp",
+          "ariaLabel": "Lámpara sobre el cuadro"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_painting_v": {
+      "hotspots": [],
+      "overlays": []
+    },
+    "bsmnt_02_stairs": {
+      "hotspots": [],
+      "overlays": []
+    },
+    "bsmnt_01_pale": {
+      "hotspots": [
+        {
+          "id": "hotspot_pale_light_box",
+          "x_pct": 0.1875,
+          "y_pct": 0.1944,
+          "w_pct": 0.0755,
+          "h_pct": 0.2083,
+          "action": "navigate",
+          "targetScene": "bsmnt_01_light_box",
+          "ariaLabel": "Examinar cuadro de luces"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_light_box": {
+      "hotspots": [
+        {
+          "id": "hotspot_light_box_panel",
+          "x_pct": 0.6531,
+          "y_pct": 0.3639,
+          "w_pct": 0.1042,
+          "h_pct": 0.2426,
+          "action": "light_box_panel",
+          "ariaLabel": "Panel de conexiones eléctricas"
+        },
+        {
+          "id": "hotspot_light_box_switch_slot",
+          "x_pct": 0.4172,
+          "y_pct": 0.2815,
+          "w_pct": 0.0167,
+          "h_pct": 0.0778,
+          "action": "light_box_switch_slot",
+          "ariaLabel": "Ranura para interruptor magnetotérmico"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_light_box_open": {
+      "hotspots": [
+        {
+          "id": "hotspot_light_box_panel",
+          "x_pct": 0.6531,
+          "y_pct": 0.3639,
+          "w_pct": 0.1042,
+          "h_pct": 0.2426,
+          "action": "light_box_panel",
+          "ariaLabel": "Panel de conexiones eléctricas"
+        },
+        {
+          "id": "hotspot_light_box_switch_slot",
+          "x_pct": 0.4172,
+          "y_pct": 0.2815,
+          "w_pct": 0.0167,
+          "h_pct": 0.0778,
+          "action": "light_box_switch_slot",
+          "ariaLabel": "Ranura para interruptor magnetotérmico"
+        }
+      ],
+      "overlays": []
+    },
+    "bsmnt_01_light_box_panel": {
+      "hotspots": [],
+      "overlays": []
+    }
+  }
+}
